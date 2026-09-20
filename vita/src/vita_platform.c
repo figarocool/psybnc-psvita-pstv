@@ -15,7 +15,9 @@
 #include <psp2/io/dirent.h>
 #include <psp2/io/stat.h>
 #include <psp2/ctrl.h>
+#include <psp2/power.h>
 
+#include <pthread.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -115,9 +117,43 @@ static void seed_from_bundle(const char *bundle_dir, const char *dest_dir)
     sceIoDclose(d);
 }
 
+/* PS Vita suspends the whole app's process a while after the screen turns
+ * off (Settings > Power Save Settings). A suspended process can't respond
+ * to the IRC server's periodic PING within its timeout, so the server
+ * disconnects the bouncer - even though data already in flight (e.g. an
+ * in-progress DCC download) can keep trickling into the OS-level socket
+ * buffer for a bit longer, which is why downloads look unaffected while
+ * the IRC link visibly drops. scePowerRequestDisplayOn() is the standard
+ * homebrew trick to signal "activity" and reset the system's idle/standby
+ * timers, so we call it periodically from a dedicated thread for as long
+ * as the bouncer runs. Trade-off: the screen/backlight stays on the whole
+ * time (battery drain, and OLED burn-in risk if left on a static image
+ * for very long stretches). */
+static void *keepawake_thread(void *arg)
+{
+    (void)arg;
+    for (;;)
+    {
+        scePowerRequestDisplayOn();
+        sceKernelDelayThread(15 * 1000 * 1000); /* 15s */
+    }
+    return NULL;
+}
+
+static void start_keepawake(void)
+{
+    pthread_t th;
+    pthread_attr_t attr;
+    pthread_attr_init(&attr);
+    pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_DETACHED);
+    pthread_create(&th, &attr, keepawake_thread, NULL);
+    pthread_attr_destroy(&attr);
+}
+
 void vita_platform_init(void)
 {
     psvDebugScreenInit();
+    start_keepawake();
     /* Default font is tiny at native 960x544 res; scale it 2x so the
      * IP/port/log text is readable without eating the whole screen. */
     psvDebugScreenSetFont(psvDebugScreenScaleFont2x(psvDebugScreenGetFont()));

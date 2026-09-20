@@ -48,6 +48,7 @@ target_link_libraries(${PROJECT_NAME}
   SceDisplay_stub
   SceCtrl_stub
   SceSysmodule_stub
+  ScePower_stub
   pthread
   m
 )
