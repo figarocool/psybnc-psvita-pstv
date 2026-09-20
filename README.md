@@ -34,7 +34,7 @@ Questo repository contiene anche il porting Android (cartella `android/`), reali
 
 ## Crediti e licenza
 
-**Porting Android**: 8byte di Stefano Basile — info@8byte.it — https://8byte.it
+**Porting Android**: Stefano Basile (contatti tramite GitHub)
 **Porting PS Vita/PSTV**: vedi [`vita/README.md`](vita/README.md)
 
 Il codice sorgente originale di psyBNC e le modifiche apportate in questo repository sono rilasciate sotto licenza **GNU General Public License v2 (GPLv2)**. Consulta il file `COPYING` per i dettagli completi.
@@ -77,7 +77,7 @@ This repository also contains the Android port (`android/` folder), built with t
 
 ## Credits and license
 
-**Android port**: 8byte by Stefano Basile — info@8byte.it — https://8byte.it
+**Android port**: Stefano Basile (contact via GitHub)
 **PS Vita/PSTV port**: see [`vita/README.md`](vita/README.md)
 
 psyBNC's original source code and the changes made in this repository are released under the **GNU General Public License v2 (GPLv2)**. See `COPYING` for full details.
