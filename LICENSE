@@ -1,4 +1,4 @@
-# Licenza psyBNC Android
+# Licenza psyBNC
 
 ## Copyright (c) 2024 Stefano Basile
 
@@ -33,7 +33,7 @@ Apri una issue o una discussion sul repository GitHub del progetto.
 Se autorizzato a distribuire, è **OBBLIGATORIO** includere:
 
 ```
-psyBNC Android - IRC Bouncer
+psyBNC - IRC Bouncer
 Copyright (c) 2024 Stefano Basile
 
 Questo software è distribuito con autorizzazione scritta dell'autore.
@@ -42,7 +42,7 @@ Tutti i diritti riservati.
 
 ### Nel Codice Sorgente
 ```basic
-' psyBNC Android - IRC Bouncer
+' psyBNC - IRC Bouncer
 ' Copyright (c) 2024 Stefano Basile
 ' Licenza: Uso personale e non commerciale
 ' Per uso commerciale, contattare l'autore tramite GitHub
