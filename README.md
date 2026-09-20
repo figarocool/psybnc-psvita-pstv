@@ -1,72 +1,83 @@
-# psyBNC - IRC Bouncer per Android
+# psyBNC - IRC Bouncer per PS Vita / PSTV (e Android)
 
-## Descrizione del Progetto
+*[English version below](#psybnc---irc-bouncer-for-ps-vita--pstv-and-android-english)*
 
-**psyBNC** è lo storico e potentissimo IRC Bouncer (proxy IRC) originariamente scritto in C, ora completamente portato e ottimizzato per **Android**.
-Grazie all'uso di Android NDK, questa applicazione fa girare il vero e proprio cuore nativo (core) di psyBNC direttamente sul tuo smartphone o tablet, garantendo le stesse prestazioni, affidabilità e set di comandi di un server Linux tradizionale.
+**psyBNC** è lo storico e potentissimo IRC Bouncer (proxy IRC) originariamente scritto in C. Questo repository lo porta nativamente su **PS Vita e PSTV homebrew**, oltre a contenere anche il porting su **Android** realizzato in precedenza.
 
-Questo porting Android include un'interfaccia grafica (UI) nativa e un servizio in background (Foreground Service) studiato per evitare che il sistema operativo uccida il processo, mantenendo così la tua presenza su IRC attiva 24/7 anche quando chiudi l'app.
+## Porting PS Vita / PSTV
 
-*Nota: Questo repository contiene la nuova versione nativa C/Java. Se stai cercando la vecchia versione sperimentale scritta in Basic4Android (B4A), la trovi nel branch `b4a-legacy`.*
+Il porting principale di questo repository. Trasforma la tua PS Vita (o PSTV) in un bouncer IRC always-on sulla tua rete locale, usando [VitaSDK](https://vitasdk.org/).
+
+- All'avvio mostra a schermo l'IP della console e la porta del bouncer (`31337` di default).
+- Nessuna password precompilata: **la prima persona che si connette e invia `/PASS unapassword` diventa amministratore**, esattamente come nel psyBNC originale.
+- Sorgente C praticamente invariato: il porting aggiunge solo un layer di compatibilità socket (`vita/compat/`) che traduce le chiamate BSD standard verso l'API nativa `SceNet` della console.
+
+📖 **Documentazione completa, build, installazione e limiti noti**: [`vita/README.md`](vita/README.md)
+📦 **Download**: vedi la [ultima release](../../releases/latest) per il file `.vpk` pronto all'uso.
+
+## Porting Android
+
+Questo repository contiene anche il porting Android (cartella `android/`), realizzato tramite Android NDK: fa girare il core nativo di psyBNC su smartphone/tablet con un Foreground Service per restare online 24/7.
+
+- Interfaccia grafica nativa, notifiche Android, Storage Access Framework per i download DCC.
+- Compilazione: apri `android/` con Android Studio (richiede Android NDK + CMake dall'SDK Manager).
+- Stesso flusso di primo utilizzo: la prima password inviata al bouncer diventa quella dell'amministratore.
+- Se cerchi la vecchia versione sperimentale in Basic4Android (B4A), è nel branch `b4a-legacy`.
+
+## Funzionalità storiche di psyBNC (comuni a entrambi i porting)
+
+- Gestione messaggi privati offline, gestione canali/topic
+- Supporto DCC completo (SEND/GET e chat dirette)
+- Multi-client e multi-server IRC contemporanei
+- Gestione VHOST e PROXY
+- Oltre 200 comandi amministrativi interni (`/BHELP` per la lista completa)
+
+## Crediti e licenza
+
+**Porting Android**: 8byte di Stefano Basile — info@8byte.it — https://8byte.it
+**Porting PS Vita/PSTV**: vedi [`vita/README.md`](vita/README.md)
+
+Il codice sorgente originale di psyBNC e le modifiche apportate in questo repository sono rilasciate sotto licenza **GNU General Public License v2 (GPLv2)**. Consulta il file `COPYING` per i dettagli completi.
 
 ---
 
-## Caratteristiche Principali del Porting Android
+# psyBNC - IRC Bouncer for PS Vita / PSTV (and Android) (English)
 
-- **Core Nativo C (NDK)**: Non è un emulatore, è il vero codice sorgente di psyBNC compilato per processori ARM (arm64-v8a, armeabi-v7a) e x86.
-- **Foreground Service con WakeLock**: Mantiene la connessione persistente in background sopravvivendo allo "swipe" dell'app e alle politiche di risparmio energetico di Android.
-- **Gestione DNS Ottimizzata**: Il resolver integrato (`c-ares`) è stato patchato per comunicare correttamente con i DNS nativi di Android.
-- **Supporto Storage Access Framework (SAF)**: Permette di scegliere comodamente qualsiasi cartella (inclusa la microSD) per salvare i file scaricati tramite DCC.
-- **Notifiche Android**: Avvisi in tempo reale (anche a UI chiusa) al completamento dei download DCC.
-- **Configurazione Intelligente**: Generazione automatica del `psybnc.conf` e delle regole `HOSTALLOWS` per permettere la connessione immediata in localhost o LAN.
+*[Versione italiana sopra](#psybnc---irc-bouncer-per-ps-vita--pstv-e-android)*
 
-## Funzionalità Storiche di psyBNC (tutte supportate!)
+**psyBNC** is the classic, powerful C-based IRC bouncer. This repository ports it natively to **PS Vita and PSTV homebrew**, and also contains an earlier **Android** port.
 
-- **Gestione messaggi privati**: Salva e riproduce i messaggi privati ricevuti durante l'assenza
-- **Gestione canali**: Mantiene la lista dei canali e dei topic
-- **Supporto DCC completo**: Trasferimento file (DCC SEND/GET) e chat dirette
-- **Multi-client e Multi-server**: Più client connessi simultaneamente e connessione a più server IRC
-- **Sistema di performance**: Monitoraggio del traffico di rete e dei socket attivi
-- **Gestione VHOST e PROXY**: Supporto virtual host e proxy
-- **Comandi amministrativi**: Oltre 200 comandi interni (usando `/b` o `/QUOTE`) per la gestione completa del bouncer
+## PS Vita / PSTV port
 
-## Come si usa l'App
+The main port in this repository. Turns your PS Vita (or PSTV) into an always-on IRC bouncer on your local network, built with [VitaSDK](https://vitasdk.org/).
 
-1. **Avvia l'applicazione** e scegli la cartella dove vuoi che vengano salvati i download DCC.
-2. **Scegli IP e Porta**: L'app ti mostrerà gli IP disponibili sul tuo dispositivo (es. localhost o l'IP della tua rete Wi-Fi).
-3. **Premi "Avvia Server"**: psyBNC si avvierà in background e vedrai una notifica fissa nel menu a tendina di Android.
-4. **Connettiti con un Client IRC** (es. AndroIRC, Revolution IRC, o dal PC se sei nella stessa rete LAN):
-   - IP: Quello mostrato nell'app (es. `127.0.0.1`)
-   - Porta: Quella scelta (es. `31337`)
-   - Password: La prima password che invierai diventerà automaticamente quella dell'amministratore!
-5. Usa il comando `/b help` dal tuo client IRC per vedere la lista di tutti i comandi disponibili.
+- Prints the console's IP and the bouncer's port (`31337` by default) on screen at startup.
+- No password baked in: **the first person to connect and send `/PASS somepassword` becomes the administrator**, exactly like in the original psyBNC.
+- The C source is left almost untouched: the port only adds a socket compatibility layer (`vita/compat/`) that translates standard BSD calls into the console's native `SceNet` API.
 
-## Comandi IRC Principali
+📖 **Full documentation, build, install and known limitations**: [`vita/README.md`](vita/README.md)
+📦 **Download**: see the [latest release](../../releases/latest) for a ready-to-install `.vpk`.
 
-Una volta connesso al bouncer, puoi impartire i comandi inviandoli direttamente a psyBNC:
+## Android port
 
-- `/b addserver irc.server.com :porta` - Aggiunge un server IRC a cui connettersi
-- `/b listservers` - Lista i server configurati
-- `/b bhelp` - Mostra la guida interna completa
-- `/b playprivatelog` - Legge i messaggi ricevuti mentre eri offline
-- `/b dccstatus` - Mostra lo stato dei trasferimenti file in corso
-- `/b sockstat` - Mostra le connessioni e i socket attivi
+This repository also contains the Android port (`android/` folder), built with the Android NDK: it runs psyBNC's native core on phones/tablets with a Foreground Service to stay online 24/7.
 
-## Compilazione dal Sorgente
+- Native UI, Android notifications, Storage Access Framework for DCC downloads.
+- Build: open `android/` with Android Studio (requires the Android NDK + CMake from the SDK Manager).
+- Same first-run flow: the first password sent to the bouncer becomes the administrator's.
+- Looking for the old experimental Basic4Android (B4A) version? It's on the `b4a-legacy` branch.
 
-Se vuoi compilare il progetto da solo usando Android Studio:
+## psyBNC's classic features (shared by both ports)
 
-1. Assicurati di avere installato l'**Android NDK** e **CMake** tramite l'SDK Manager di Android Studio.
-2. Apri la cartella `android/` con Android Studio.
-3. Il progetto usa Gradle per invocare `ndk-build`. Il codice C originale si trova nella cartella principale `src/`.
-4. Compila l'APK come un normale progetto Android.
+- Offline private message logging, channel/topic tracking
+- Full DCC support (SEND/GET and direct chat)
+- Multiple simultaneous clients and IRC servers
+- VHOST and PROXY support
+- 200+ built-in admin commands (`/BHELP` for the full list)
 
-## Crediti e Licenza
+## Credits and license
 
-**Porting Android realizzato da:**
-8byte di Stefano Basile
-Email: info@8byte.it
-Web: https://8byte.it
+**Android port**: 8byte by Stefano Basile — info@8byte.it — https://8byte.it
+**PS Vita/PSTV port**: see [`vita/README.md`](vita/README.md)
 
-**Licenza:**
-Il codice sorgente originale di psyBNC e le modifiche apportate per questo porting Android sono rilasciate sotto licenza **GNU General Public License v2 (GPLv2)**. Consulta il file `COPYING` per i dettagli completi.
+psyBNC's original source code and the changes made in this repository are released under the **GNU General Public License v2 (GPLv2)**. See `COPYING` for full details.
