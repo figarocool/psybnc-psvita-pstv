@@ -174,8 +174,10 @@ struct hasht inboundhash[]={
     {1252,	printhelp,	1253,	1254	,0,0},
     {1450,	cmdbdone,	1451,	1452	,0,0},
     {1460,	cmdsetconnectdelay,	1461,	1462	,0,1},
+#ifdef IPV6
     {1480,	cmddefaultipv6,		1481,   1482    ,0,1},
     {1490,	cmdpreferipv6,		1491,   1492    ,0,0},
+#endif
 #ifdef MYSQL_IPCHECK
 #ifdef HAVE_MYSQL
     {2001,	cmdmysqlipcheck,	2002,	2003	,0,1},

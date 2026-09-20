@@ -33,11 +33,21 @@
 #include <stdlib.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#ifndef VITA
 #include <sys/wait.h>
+#endif
 #include <arpa/inet.h>
 #include <ctype.h>
 #include <signal.h>
 #include <setjmp.h>
+#ifdef VITA
+/* vitasdk's setjmp.h has no sigsetjmp/siglongjmp (they only differ from
+ * plain setjmp/longjmp by also saving/restoring the signal mask, which
+ * doesn't apply here since Vita homebrew has no real signal masks). */
+#define sigjmp_buf jmp_buf
+#define sigsetjmp(env, savesigs) setjmp(env)
+#define siglongjmp(env, val) longjmp(env, val)
+#endif
 #include <errno.h>
 #ifdef HAVE_CONFIG
 #include <config.h>

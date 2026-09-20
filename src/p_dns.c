@@ -1,14 +1,25 @@
 #define P_DNS
 
 #include <p_global.h>
+#ifdef VITA
+/* PS Vita has no c-ares port; name resolution below always goes through
+ * getaddrinfo()/getnameinfo() (see vita/compat) regardless of platform,
+ * c-ares is only used elsewhere in this file as fd-plumbing for an async
+ * engine that never actually issues a query, so it can just be dropped. */
+#define ARES_SUCCESS   0
+#define ARES_ENOTFOUND 4
+#else
 #include <ares.h>
+#endif
 #include <netdb.h>
 #include <sys/socket.h>
 #if defined(ANDROID) || defined(__ANDROID__)
 #include <sys/system_properties.h>
 #endif
 
+#ifndef VITA
 static ares_channel resolver;
+#endif
 
 #if defined(ANDROID) || defined(__ANDROID__)
 static int p_dns_configure_android_servers(void)
@@ -61,6 +72,12 @@ static int p_dns_configure_android_servers(void)
  */
 int p_dns_init()
 {
+#ifdef VITA
+    /* No c-ares on Vita; resolution goes through the blocking
+     * getaddrinfo()/getnameinfo() shim in vita/compat instead. */
+    p_log(LOG_INFO, -1, "Resolver initialized: sceNetResolver (blocking)");
+    return 1;
+#else
     int ret;
 
     if ((ret = ares_init(&resolver)) != ARES_SUCCESS)
@@ -74,6 +91,7 @@ int p_dns_init()
 
     p_log(LOG_INFO, -1, "Asynchronous resolver initialized: c-ares %s", ares_version(NULL));
     return 1;
+#endif
 }
 
 /**
@@ -87,7 +105,12 @@ int p_dns_init()
 int p_dns_fds(fd_set *read_fds, fd_set *write_fds)
 {
     pcontext;
+#ifdef VITA
+    (void)read_fds; (void)write_fds;
+    return 0; /* resolution is blocking, nothing to multiplex */
+#else
     return ares_fds(resolver, read_fds, write_fds);
+#endif
 }
 
 /**
@@ -100,7 +123,11 @@ int p_dns_fds(fd_set *read_fds, fd_set *write_fds)
 void p_dns_process(fd_set *read_fds, fd_set *write_fds)
 {
     pcontext;
+#ifdef VITA
+    (void)read_fds; (void)write_fds;
+#else
     ares_process(resolver, read_fds, write_fds);
+#endif
 }
 
 void p_dns_gethostbyname(char *hostname, int af, dns_host_callback callback, void *arg)
@@ -200,5 +227,9 @@ int p_dns_success(int status)
 const char *p_dns_strerror(int status)
 {
     pcontext;
+#ifdef VITA
+    return (status == ARES_SUCCESS) ? "Success" : "Name resolution failed";
+#else
     return ares_strerror(status);
+#endif
 }

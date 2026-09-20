@@ -582,9 +582,15 @@ void alrm_error(int r)
 
 int errorhandling()
 {
+#ifdef VITA
+  /* PS Vita homebrew can't catch hardware exceptions (SIGSEGV/SIGBUS/...)
+   * from user mode, and has no process signals to speak of. */
+  srand( time( NULL) );
+  return 0x0;
+#else
   struct sigaction sv;
   sigemptyset(&sv.sa_mask);
-  sv.sa_flags=0;  
+  sv.sa_flags=0;
   sv.sa_handler = killed;
   sv.sa_handler=bus_error;
   sigaction( SIGBUS, &sv, NULL);
@@ -617,4 +623,5 @@ int errorhandling()
   umask(0177);
   srand( time( NULL) );
   return 0x0;
+#endif
 }

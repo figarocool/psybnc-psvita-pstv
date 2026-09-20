@@ -35,6 +35,10 @@
 #include <p_global.h>
 #include <p_data.h>
 
+#ifdef VITA
+#include "vita_platform.h"
+#endif
+
 int slice=0;
 
 #ifdef HAVE_SSL
@@ -194,6 +198,9 @@ main (int argc, char **argv)
   char *bversion;
   char *envvalue;
   FILE *pidfile,*conffile;
+#ifdef VITA
+  vita_platform_init();
+#endif
   initruntimepaths();
   if(argc==2)
   {
@@ -278,6 +285,9 @@ main (int argc, char **argv)
     printf("%s", lngtxt(1002));
     exit (0x0);
   }
+#ifdef VITA
+  vita_platform_show_status(listenport);
+#endif
   /* creating background */
   pidfile = NULL;
   if(foregroundmode==0 && pidfilename[0]!=0)

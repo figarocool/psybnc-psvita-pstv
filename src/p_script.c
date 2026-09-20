@@ -107,6 +107,16 @@ int startpipe(	int usern,
 		int(*terminated)(int,int),
 		int(*destroyed)(int))
 {
+#ifdef VITA
+    /* PS Vita homebrew cannot fork(), exec(), or run a shell: there is no
+     * way to spawn an external program on this platform, so the psyBNC
+     * "run an external script/program" feature is unavailable here. */
+    (void)setenvironment; (void)inboundhandler; (void)outboundhandler;
+    (void)errorlog; (void)terminated; (void)destroyed;
+    pcontext;
+    p_log(LOG_ERROR,usern,lngtxt(714),program,user(usern)->login);
+    return -1;
+#else
     int in_fds[2],out_fds[2],err_fds[2];
     int pid,ss1=0,ss2=0,ss3=0,rc,dummy;
     struct socketnodes *sdes;
@@ -248,6 +258,7 @@ int startpipe(	int usern,
 	addsubtask(usern,pid,in_fds[1],out_fds[0],err_fds[0],program,script);
     }
     return pid;
+#endif
 }
 
 /* standard routine to kill a task */
@@ -295,7 +306,9 @@ int terminatetask(int pid,int err)
 
     free(st->desc);
     free(st);
+#ifndef VITA
     waitpid(pid, NULL, 0);
+#endif
     return 0x0;
 }
 
