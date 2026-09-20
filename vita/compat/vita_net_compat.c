@@ -91,7 +91,15 @@ extern int p_log(int loglevel, int usern, const char *format, ...);
 
 static int sce_net_errno(int sce_ret)
 {
-    unsigned int code = (unsigned int)(-sce_ret);
+    /* sceNet* functions return the SCE_NET_ERROR_* constant's bit pattern
+     * directly (e.g. 0x80410124 for EINPROGRESS), which just happens to
+     * look negative as a plain int because bit 31 is set - it is NOT the
+     * arithmetic negation of the error code. Reinterpret the bits as-is;
+     * do not negate. (Confirmed on hardware: a non-blocking connect() in
+     * progress was showing up here as 0x7FBEFEDC/-sce_ret instead of the
+     * real 0x80410124/EINPROGRESS, so callers never saw EINPROGRESS and
+     * treated every in-progress outbound connection as a hard failure.) */
+    unsigned int code = (unsigned int)sce_ret;
     switch (code)
     {
         case SCE_NET_ERROR_EINTR:         return EINTR;
