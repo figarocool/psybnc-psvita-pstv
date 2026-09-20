@@ -59,8 +59,10 @@ già compilata si trova in [`dist/psybnc_vita.vpk`](dist/psybnc_vita.vpk).
   `fork()`/`exec()`/shell per le app homebrew).
 - Chiudere l'app ferma il bouncer: nessun modo per farlo girare in background
   su Vita homebrew.
-- Se la memory card/SD2Vita è formattata FAT32, i singoli file DCC (es. film
-  ricevuti) sono limitati a 4GB.
+- Limite di 4GB per singolo file DCC (es. film ricevuti) **solo se** lo
+  storage è formattato FAT32 — è un limite del filesystem, non della Vita.
+  Con exFAT (formato raccomandato per SD2Vita/PSVSD sulle guide più recenti)
+  questo limite non esiste.
 - Non ancora validato a fondo su hardware reale in scenari di uso prolungato;
   segnalare eventuali problemi.
 
@@ -130,7 +132,9 @@ copy is checked in at [`dist/psybnc_vita.vpk`](dist/psybnc_vita.vpk).
   apps have no `fork()`/`exec()`/shell).
 - Closing the app stops the bouncer: there is no way to run it in the
   background on Vita homebrew.
-- If your memory card/SD2Vita is formatted FAT32, individual DCC files
-  (e.g. received movies) are capped at 4GB.
+- 4GB cap on individual DCC files (e.g. received movies) **only if** your
+  storage is formatted FAT32 — this is a filesystem limit, not a Vita
+  limit. With exFAT (the recommended format for SD2Vita/PSVSD setups per
+  current guides) there is no such cap.
 - Not yet heavily validated on real hardware under long-running usage;
   please report any issues you hit.
