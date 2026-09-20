@@ -118,6 +118,10 @@ static void seed_from_bundle(const char *bundle_dir, const char *dest_dir)
 void vita_platform_init(void)
 {
     psvDebugScreenInit();
+    /* Default font is tiny at native 960x544 res; scale it 2x twice (4x
+     * total area) so the IP/port/log text is actually readable on the
+     * Vita's screen. */
+    psvDebugScreenSetFont(psvDebugScreenScaleFont2x(psvDebugScreenScaleFont2x(psvDebugScreenGetFont())));
     psvDebugScreenPrintf("psyBNC per PS Vita - avvio in corso...\n");
 
     vita_net_init();
