@@ -59,6 +59,12 @@ già compilata si trova in [`dist/psybnc_vita.vpk`](dist/psybnc_vita.vpk).
   `fork()`/`exec()`/shell per le app homebrew).
 - Chiudere l'app ferma il bouncer: nessun modo per farlo girare in background
   su Vita homebrew.
+- Per evitare che la console vada in standby (il che sospenderebbe l'app e
+  farebbe scadere la connessione IRC per timeout dei `PING`), l'app richiama
+  periodicamente `scePowerRequestDisplayOn()`: **lo schermo/retroilluminazione
+  resta acceso per tutta la durata di esecuzione del bouncer**, il che
+  consuma più batteria e su modelli OLED comporta un rischio di burn-in se
+  lasciato acceso per periodi molto lunghi sulla stessa immagine.
 - Limite di 4GB per singolo file DCC (es. film ricevuti) **solo se** lo
   storage è formattato FAT32 — è un limite del filesystem, non della Vita.
   Con exFAT (formato raccomandato per SD2Vita/PSVSD sulle guide più recenti)
@@ -132,6 +138,12 @@ copy is checked in at [`dist/psybnc_vita.vpk`](dist/psybnc_vita.vpk).
   apps have no `fork()`/`exec()`/shell).
 - Closing the app stops the bouncer: there is no way to run it in the
   background on Vita homebrew.
+- To stop the console from entering standby (which would suspend the app
+  and let the IRC connection time out waiting for `PING` replies), the app
+  periodically calls `scePowerRequestDisplayOn()`: **the screen/backlight
+  stays on for as long as the bouncer is running**, which uses more
+  battery and carries a burn-in risk on OLED models if left showing the
+  same static image for very long stretches.
 - 4GB cap on individual DCC files (e.g. received movies) **only if** your
   storage is formatted FAT32 — this is a filesystem limit, not a Vita
   limit. With exFAT (the recommended format for SD2Vita/PSVSD setups per
