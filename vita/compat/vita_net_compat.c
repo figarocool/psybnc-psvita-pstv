@@ -83,6 +83,12 @@ int vita_net_get_ip(char *buf, size_t len)
 
 /* ---- errno mapping ---------------------------------------------------- */
 
+/* Declared directly (rather than pulling in the whole BSD-socket compat
+ * chain via p_global.h) just so an unmapped SceNet error still ends up
+ * somewhere the user can see it, instead of silently collapsing to EIO. */
+extern int p_log(int loglevel, int usern, const char *format, ...);
+#define VITA_LOG_ERROR 0x0002
+
 static int sce_net_errno(int sce_ret)
 {
     unsigned int code = (unsigned int)(-sce_ret);
@@ -117,7 +123,17 @@ static int sce_net_errno(int sce_ret)
         case SCE_NET_ERROR_ETIMEDOUT:     return ETIMEDOUT;
         case SCE_NET_ERROR_ECONNREFUSED:  return ECONNREFUSED;
         case SCE_NET_ERROR_EHOSTUNREACH:  return EHOSTUNREACH;
-        default:                          return EIO;
+        case SCE_NET_ERROR_EHOSTDOWN:     return EHOSTDOWN;
+        case SCE_NET_ERROR_ENETRESET:     return ENETRESET;
+        case SCE_NET_ERROR_ESHUTDOWN:     return ESHUTDOWN;
+        case SCE_NET_ERROR_ENOTINIT:
+        case SCE_NET_ERROR_ENOLIBMEM:
+        case SCE_NET_ERROR_EINTERNAL:
+            p_log(VITA_LOG_ERROR, -1, "vita_net: sceNet stack error 0x%08X (raw return %d)", code, sce_ret);
+            return EIO;
+        default:
+            p_log(VITA_LOG_ERROR, -1, "vita_net: unmapped SceNet error 0x%08X (raw return %d)", code, sce_ret);
+            return EIO;
     }
 }
 
